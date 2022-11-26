@@ -41,9 +41,9 @@ version = "0.3.16"
 features = ["sink"]
 
 [dependencies.tokio]
-version = "1.10"
+version = "1.22"
 default-features = false
-features = ["io-util", "time", "net", "sync", "rt-multi-thread"]
+features = ["io-util", "time", "net", "sync", "rt-multi-thread", "full"]
 optional = true
 
 [dependencies.async-std]
