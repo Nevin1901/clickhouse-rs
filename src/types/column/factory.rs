@@ -71,7 +71,15 @@ impl dyn ColumnData {
             "Int64" | "BigInt" => W::wrap(VectorColumnData::<i64>::load(reader, size)?),
             "Float32" | "Float" => W::wrap(VectorColumnData::<f32>::load(reader, size)?),
             "Float64" | "Double" => W::wrap(VectorColumnData::<f64>::load(reader, size)?),
+            // should be fine as long as we pass json in as a string and not as the type. Is it strongly typed: no. do I care? no
             "String" | "Char" | "Varchar" | "Text" | "TinyText" | "MediumText" | "LongText" | "Blob" | "TinyBlob" | "MediumBlob" | "LongBlob" => W::wrap(StringColumnData::load(reader, size)?),
+            "Object('json')" => {
+                // maybe we have to wrap the string with ()
+                println!("{}", size);
+                let object = W::wrap(StringColumnData::load(reader, size)?);
+                println!("is json");
+                object
+            },
             "Date" => W::wrap(DateColumnData::<u16>::load(reader, size, tz)?),
             "DateTime" | "Timestamp" => W::wrap(DateColumnData::<u32>::load(reader, size, tz)?),
             "IPv4" => W::wrap(IpColumnData::<Ipv4>::load(reader, size)?),
@@ -675,9 +683,7 @@ mod test {
     fn test_parse_map_type() {
         let s = "Map(UInt8, Map(UInt8,UInt8))";
         let actual = parse_map_type(s);
-        let expected = Some(
-            ("UInt8", "Map(UInt8,UInt8)")
-        );
+        let expected = Some(("UInt8", "Map(UInt8,UInt8)"));
         assert_eq!(actual, expected);
     }
 }
